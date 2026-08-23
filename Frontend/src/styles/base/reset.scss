@@ -1,0 +1,34 @@
+@use '../abstracts/variables' as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  color: $color-text;
+  background: $color-bg;
+}
+
+h1, h2, h3, h4 {
+  margin: 0 0 $space-md;
+  line-height: 1.3;
+}
+
+h2 { font-size: $font-size-xl; }
+h3 { font-size: $font-size-lg; }
+
+p { margin: 0 0 $space-sm; }
+
+a {
+  color: $color-primary;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+ul { margin: 0; }

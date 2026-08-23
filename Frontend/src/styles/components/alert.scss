@@ -1,0 +1,27 @@
+@use '../abstracts/variables' as *;
+
+.alert {
+  padding: $space-sm $space-md;
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  margin-bottom: $space-md;
+  font-size: $font-size-base;
+
+  &--error {
+    background: $color-error-bg;
+    border-color: $color-error-border;
+    color: $color-error;
+  }
+
+  &--success {
+    background: $color-success-bg;
+    border-color: $color-success-border;
+    color: $color-success;
+  }
+
+  &--info {
+    background: $color-primary-light;
+    border-color: $color-border;
+    color: $color-primary;
+  }
+}

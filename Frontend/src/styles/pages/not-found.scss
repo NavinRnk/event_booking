@@ -1,0 +1,13 @@
+@use '../abstracts/variables' as *;
+
+.not-found-page {
+  padding: $space-2xl;
+  text-align: center;
+
+  &__code {
+    font-size: 48px;
+    font-weight: $font-weight-bold;
+    color: $color-primary;
+    margin-bottom: $space-sm;
+  }
+}

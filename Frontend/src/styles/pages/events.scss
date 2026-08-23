@@ -1,0 +1,33 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.events-page {
+  &__header {
+    @include flex(row, center, space-between, $space-md);
+    flex-wrap: wrap;
+    margin-bottom: $space-lg;
+  }
+
+  &__tickets {
+    font-weight: $font-weight-medium;
+    margin: $space-sm 0;
+
+    &--out { color: $color-error; }
+  }
+
+  &__meta-list {
+    margin: $space-sm 0;
+    padding-left: $space-lg;
+    color: $color-text-muted;
+    font-size: $font-size-sm;
+
+    li { margin-bottom: 2px; }
+  }
+
+  &__empty {
+    @include surface;
+    padding: $space-2xl;
+    text-align: center;
+    color: $color-text-muted;
+  }
+}

@@ -1,0 +1,15 @@
+@use '../abstracts/variables' as *;
+
+.create-event-page {
+  &__json {
+
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: $font-size-sm;
+  }
+
+  &__hint {
+    color: $color-text-muted;
+    font-size: $font-size-sm;
+    margin-bottom: $space-md;
+  }
+}

@@ -1,0 +1,23 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.container {
+  max-width: $container-width;
+  margin: 0 auto;
+  padding: $space-xl;
+
+  @include respond-to(mobile) {
+    padding: $space-md;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $space-lg;
+}
+
+.text-muted {
+  color: $color-text-muted;
+  font-size: $font-size-sm;
+}

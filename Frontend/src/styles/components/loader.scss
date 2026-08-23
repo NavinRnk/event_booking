@@ -1,0 +1,17 @@
+@use '../abstracts/variables' as *;
+
+.loader {
+  padding: $space-xl;
+  text-align: center;
+  color: $color-text-muted;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  margin-top: $space-lg;
+  font-size: $font-size-base;
+
+  &__info { color: $color-text-muted; }
+}

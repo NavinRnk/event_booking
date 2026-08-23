@@ -1,0 +1,53 @@
+@use 'sass:color';
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-xs;
+  padding: 9px $space-lg;
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  font-family: inherit;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+
+  &--primary {
+    background: $color-primary;
+    color: #fff;
+
+    &:hover:not(:disabled) { background: $color-primary-hover; }
+  }
+
+  &--secondary {
+    background: $color-surface;
+    color: $color-primary;
+    border-color: $color-border-input;
+
+    &:hover:not(:disabled) { background: $color-primary-light; }
+  }
+
+  &--danger {
+    background: $color-error;
+    color: #fff;
+
+    &:hover:not(:disabled) { background: color.adjust($color-error, $lightness: -6%); }
+  }
+
+  &--sm {
+    padding: 5px $space-md;
+    font-size: $font-size-sm;
+  }
+
+  &--block { width: 100%; }
+
+  &:disabled {
+    background: $color-disabled;
+    border-color: $color-disabled;
+    color: #fff;
+    cursor: not-allowed;
+  }
+}

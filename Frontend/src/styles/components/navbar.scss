@@ -1,0 +1,36 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.navbar {
+  @include flex(row, center, space-between, $space-md);
+  flex-wrap: wrap;
+  padding: $space-md $space-xl;
+  background: $color-primary;
+  color: #fff;
+
+  &__brand {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: #fff;
+  }
+
+  &__links {
+    @include flex(row, center, flex-start, $space-lg);
+    flex-wrap: wrap;
+  }
+
+  &__link {
+    color: #fff;
+
+    &--active { text-decoration: underline; }
+  }
+
+  &__user {
+    font-size: $font-size-sm;
+    opacity: 0.85;
+  }
+
+  @include respond-to(mobile) {
+    padding: $space-md;
+  }
+}

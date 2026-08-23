@@ -1,0 +1,295 @@
+{
+  "info": {
+    "name": "Event & Ticket System API",
+    "description": "Backend Assessment 1 - Node.js + Express + TypeScript + MySQL.\n\nHOW TO USE THIS COLLECTION\n1. Start the backend (`npm run dev`) - it auto-creates the database/tables and seeds demo data on first run.\n2. Run requests top to bottom, folder by folder: Health -> Auth -> Events -> Bookings. Later requests depend on variables saved by earlier ones.\n3. `token` and `adminToken` are filled in automatically by the Register/Login requests' \"Tests\" scripts - you never need to copy/paste a JWT by hand.\n4. `eventId` and `bookingId` are filled in the same way by \"Create Event\" and \"Book Ticket\".\n\nAUTH LEGEND (see each request name)\n  [Public]     - no token needed\n  [User]       - needs {{token}} (any logged in user)\n  [Admin]      - needs {{adminToken}}\n\nDemo accounts (created by `npm run seed`): admin@example.com / Admin@123, user@example.com / User@1234",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api", "description": "Backend base URL. Change the port here if PORT differs in .env." },
+    { "key": "token", "value": "", "description": "JWT for a normal user. Auto-filled by Auth > Register (user) or Login (user)." },
+    { "key": "adminToken", "value": "", "description": "JWT for an admin user. Auto-filled by Auth > Register (admin) or Login (admin)." },
+    { "key": "eventId", "value": "", "description": "Auto-filled by Events > Create Event (admin). Used by Get/Update/Delete Event and Book Ticket." },
+    { "key": "bookingId", "value": "", "description": "Auto-filled by Bookings > Book Ticket. Used by Cancel Booking." }
+  ],
+  "item": [
+    {
+      "name": "0. Health",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] },
+            "description": "Confirms the API is up. Expect 200 OK before running anything else."
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Auth",
+      "description": "Run one Register or Login request for a user AND one for an admin before touching the Events/Bookings folders - most of those requests need {{token}} or {{adminToken}} already set.",
+      "item": [
+        {
+          "name": "[Public] 1a. Register (user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('token', pm.response.json().data.token);",
+                  "  console.log('Saved {{token}} for the normal user.');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_name\": \"Normal User\",\n  \"user_email_id\": \"user@example.com\",\n  \"password\": \"User@1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] },
+            "description": "Creates a normal (role: user) account and saves the returned JWT into {{token}}.\n\nExpect 201 Created on first run. If this email is already registered (e.g. from the seed script), use \"Login (user)\" instead - expect 409 Conflict here."
+          }
+        },
+        {
+          "name": "[Public] 1b. Register (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('adminToken', pm.response.json().data.token);",
+                  "  console.log('Saved {{adminToken}} for the admin user.');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_name\": \"Admin User\",\n  \"user_email_id\": \"admin@example.com\",\n  \"password\": \"Admin@123\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] },
+            "description": "Creates an admin account and saves the returned JWT into {{adminToken}}. Needed for the admin-only requests in the Events folder.\n\nExpect 201 Created on first run, or 409 Conflict if this email already exists (use \"Login (admin)\" instead)."
+          }
+        },
+        {
+          "name": "[Public] 1c. Login (user) - use if already registered",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('token', pm.response.json().data.token);",
+                  "  console.log('Saved {{token}} for the normal user.');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_email_id\": \"user@example.com\",\n  \"password\": \"User@1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "description": "Logs in the normal demo user (already exists if you ran `npm run seed`) and saves the JWT into {{token}}. Expect 200 OK."
+          }
+        },
+        {
+          "name": "[Public] 1d. Login (admin) - use if already registered",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('adminToken', pm.response.json().data.token);",
+                  "  console.log('Saved {{adminToken}} for the admin user.');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_email_id\": \"admin@example.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "description": "Logs in the admin demo user (already exists if you ran `npm run seed`) and saves the JWT into {{adminToken}}. Expect 200 OK."
+          }
+        },
+        {
+          "name": "[User] 1e. Me (whoami)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] },
+            "description": "Returns the profile of whoever owns {{token}}. Useful to confirm login worked and to check your role. Expect 200 OK, 401 if the token is missing/expired."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Events",
+      "description": "Browsing (List/Get) is public. Creating, updating and deleting an event all require {{adminToken}} - run Auth > Register/Login (admin) first.",
+      "item": [
+        {
+          "name": "[Admin] 2a. Create Event (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('eventId', pm.response.json().data.event.event_id);",
+                  "  console.log('Saved {{eventId}} =', pm.response.json().data.event.event_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Node.js Conference 2026\",\n  \"description\": \"A full day of talks about backend development.\",\n  \"event_date\": \"2026-11-20T09:00:00Z\",\n  \"location\": \"Chennai Trade Centre\",\n  \"total_tickets\": 100,\n  \"metadata\": {\n    \"tags\": [\"nodejs\", \"backend\"],\n    \"speakers\": [\"Ada Lovelace\"],\n    \"seating_chart_url\": \"https://example.com/chart.png\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events", "host": ["{{baseUrl}}"], "path": ["events"] },
+            "description": "Admin only. Creates a new event and saves its id into {{eventId}} for the requests below.\n\n`metadata` is free-form JSON - put whatever extra fields the event needs.\n`total_tickets` cannot be changed later (see Update Event).\n\nExpect 201 Created, 403 if {{adminToken}} belongs to a non-admin user."
+          }
+        },
+        {
+          "name": "[Public] 2b. List Events (paginated, searchable)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/events?page=1&limit=10&upcomingOnly=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["events"],
+              "query": [
+                { "key": "page", "value": "1", "description": "1-based page number." },
+                { "key": "limit", "value": "10", "description": "Rows per page, max 100." },
+                { "key": "upcomingOnly", "value": "true", "description": "Set to false to also see past events." },
+                { "key": "search", "value": "", "description": "Optional: filter by title or location.", "disabled": true }
+              ]
+            },
+            "description": "Public. Lists events with pagination. No token required. Expect 200 OK."
+          }
+        },
+        {
+          "name": "[Public] 2c. Get Event by id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/events/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["events", "{{eventId}}"] },
+            "description": "Public. Fetches one event using {{eventId}} (set by Create Event above, or paste any real id). Expect 200 OK, 404 if the id doesn't exist."
+          }
+        },
+        {
+          "name": "[Admin] 2d. Update Event (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location\": \"Updated Venue, Chennai\",\n  \"metadata\": { \"tags\": [\"nodejs\", \"typescript\"] }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["events", "{{eventId}}"] },
+            "description": "Admin only. Send only the fields you want to change. `total_tickets` is intentionally not editable here, to keep it consistent with `available_tickets`. Expect 200 OK."
+          }
+        },
+        {
+          "name": "[Admin] 2e. Delete Event (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/events/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["events", "{{eventId}}"] },
+            "description": "Admin only. Soft-deletes the event (it is hidden, not physically removed). Run this last, after you're done testing Bookings against {{eventId}} - a booked event's tickets are still tied to it. Expect 200 OK, 409 if bookings still reference it."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Bookings",
+      "description": "Everything here needs {{token}} (any logged in user) - run Auth > Register/Login (user) first, and Events > Create Event so {{eventId}} is set.",
+      "item": [
+        {
+          "name": "[User] 3a. Book Ticket(s)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('bookingId', pm.response.json().data.booking.booking_id);",
+                  "  console.log('Saved {{bookingId}} =', pm.response.json().data.booking.booking_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_id\": \"{{eventId}}\",\n  \"quantity\": 2\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/bookings", "host": ["{{baseUrl}}"], "path": ["bookings"] },
+            "description": "Books `quantity` tickets (1-10) for {{eventId}} and saves the new booking id into {{bookingId}}.\n\nExpect 201 Created, 409 Conflict if fewer tickets remain than requested (safe to retry with a smaller quantity)."
+          }
+        },
+        {
+          "name": "[User] 3b. My Tickets (paginated)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/my?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "my"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            },
+            "description": "Lists every booking made by the logged-in user (the owner of {{token}}), including cancelled ones. Expect 200 OK."
+          }
+        },
+        {
+          "name": "[User] 3c. Cancel Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/bookings/{{bookingId}}", "host": ["{{baseUrl}}"], "path": ["bookings", "{{bookingId}}"] },
+            "description": "Cancels {{bookingId}} (must belong to the logged-in user) and returns its tickets to the event. Expect 200 OK, 409 if it was already cancelled, 404 if it belongs to someone else."
+          }
+        }
+      ]
+    }
+  ]
+}

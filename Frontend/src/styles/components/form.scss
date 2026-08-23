@@ -1,0 +1,57 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.form-field {
+  margin-bottom: $space-md;
+
+  &__label {
+    display: block;
+    margin-bottom: $space-xs;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+  }
+
+  &__required {
+    color: $color-error;
+    margin-left: 2px;
+  }
+
+  &__control {
+    @include form-control;
+
+    &--invalid {
+      border-color: $color-error-border;
+
+      &:focus {
+        border-color: $color-error;
+        box-shadow: 0 0 0 2px rgba($color-error, 0.15);
+      }
+    }
+  }
+
+  textarea#{&}__control {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  &__help {
+    display: block;
+    margin-top: $space-xs;
+    color: $color-text-muted;
+    font-size: $font-size-sm;
+  }
+
+  &__error {
+    display: block;
+    margin-top: $space-xs;
+    color: $color-error;
+    font-size: $font-size-sm;
+  }
+}
+
+.form-inline {
+  @include flex(row, stretch, flex-start, $space-sm);
+  margin-bottom: $space-lg;
+
+  .form-field { margin-bottom: 0; flex: 1; }
+}

@@ -1,0 +1,33 @@
+@use '../abstracts/variables' as *;
+
+.table-wrapper {
+
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: $color-surface;
+  font-size: $font-size-base;
+
+  th,
+  td {
+    border: 1px solid $color-border;
+    padding: $space-sm;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  th {
+    background: $color-primary-light;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.badge {
+  font-weight: $font-weight-medium;
+
+  &--ok  { color: $color-success; }
+  &--off { color: $color-error; }
+}

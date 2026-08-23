@@ -1,0 +1,13 @@
+@use '../abstracts/variables' as *;
+
+.my-tickets-page {
+  &__empty {
+    padding: $space-2xl;
+    text-align: center;
+    color: $color-text-muted;
+  }
+
+  &__actions {
+    white-space: nowrap;
+  }
+}

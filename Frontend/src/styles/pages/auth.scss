@@ -1,0 +1,10 @@
+@use '../abstracts/variables' as *;
+
+.auth-page {
+  &__footer {
+    margin-top: $space-lg;
+    text-align: center;
+    color: $color-text-muted;
+    font-size: $font-size-sm;
+  }
+}
